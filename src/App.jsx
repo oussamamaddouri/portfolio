@@ -1,57 +1,93 @@
 // src/App.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { ThemeProvider } from 'styled-components';
 import styled from 'styled-components';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { theme } from './styles/theme';
 import { SHOWCASE_PROJECTS as projects } from './data/portfolioData';
 
-// Import Components
+// --- GSAP Imports ---
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
+
+
+// --- Import Components ---
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
 import Skills from './components/Skills.jsx';
 import Projects from './components/Projects.jsx';
-import LatestWorkTitle from './components/LatestWorkTitle.jsx';
-import ProjectShowcase from './components/ProjectShowcase.jsx';
+// Replaced LatestWorkTitle and ProjectShowcase with the single, more robust component
+import WorkShowcase from './components/WorkShowcase.jsx';
 import Footer from './components/Footer.jsx';
 
-// The main container for the scroll sequence. Its height determines how long the animation lasts.
-// Height = 1 screen for the title, + 1 screen for EACH project.
+// Register the GSAP plugin
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+// The main container for the showcase. Its height is determined by the number of projects.
+// This gives GSAP enough room to animate the scroll sequence smoothly.
 const ShowcaseContainer = styled.div`
   position: relative;
-  height: ${(projects.length + 1) * 100}vh; 
-  background-color: #121212;
+  /* Total height: 100vh for the title reveal, 100vh for each project to have its moment */
+  height: ${(projects.length + 1) * 100}vh;
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
+
 function App() {
-  const [showcaseProgress, setShowcaseProgress] = useState(0);
-  const showcaseRef = useRef(null);
+  const showcaseContainerRef = useRef(null);
+  const workShowcaseRef = useRef(null);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const el = showcaseRef.current;
-      if (!el) return;
-      const { top, height } = el.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const scrollableHeight = height - viewportHeight;
-      if (scrollableHeight <= 0) return;
-      const progress = Math.max(0, Math.min(1, -top / scrollableHeight));
-      setShowcaseProgress(progress);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // --- MASTER GSAP TIMELINE FOR THE SHOWCASE ---
+  useGSAP(() => {
+    const showcase = workShowcaseRef.current;
+    if (!showcase) return;
 
-  // Determine which phase of the animation we are in
-  const totalSteps = projects.length + 1; // 1 step for the title + 1 for each project
-  const currentStep = showcaseProgress * totalSteps;
+    const projects = showcase.querySelectorAll('.project-card');
+    const title = showcase.querySelector('.work-title');
 
-  // The title is active only during the first "step"
-  const isTitleActive = currentStep < 1;
-  
-  // The project animation starts after the first "step" (the title's step)
-  // This calculates a new progress from 0 to 1 just for the projects
-  const projectScroll = Math.max(0, (currentStep - 1) / projects.length);
+    // Create a master timeline that is controlled by the scroll position
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: showcaseContainerRef.current,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1.5, // Smoothly ties the animation progress to the scrollbar
+        pin: showcase, // Pin the WorkShowcase component while the timeline runs
+      },
+    });
+
+    // 1. Animate the title into view
+    tl.fromTo(title,
+      { y: 50, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, ease: 'power2.out' }
+    );
+
+    // 2. Animate the projects in and out sequentially
+    projects.forEach((project, index) => {
+      // Animate the current project card into view
+      tl.to(project, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 1.5,
+        ease: 'power3.inOut'
+      }, index + 0.8); // Stagger the start time of each card animation
+
+      // If it's not the last project, animate it out
+      if (index < projects.length - 1) {
+        tl.to(project, {
+          opacity: 0,
+          y: -40,
+          scale: 0.95,
+          duration: 1.5,
+          ease: 'power3.inOut'
+        }, index + 1.5); // Start fading out before the next one is fully in
+      }
+    });
+
+  }, { scope: showcaseContainerRef }); // Scope the GSAP context for better performance
 
   return (
     <ThemeProvider theme={theme}>
@@ -61,11 +97,14 @@ function App() {
         <Hero />
         <Skills />
         <Projects />
-        
-        <ShowcaseContainer ref={showcaseRef}>
-          {/* Both sticky components live here, layered by their z-index */}
-          <LatestWorkTitle isActive={isTitleActive} />
-          <ProjectShowcase scrollProgress={projectScroll} />
+
+        <ShowcaseContainer ref={showcaseContainerRef}>
+          {/*
+            The WorkShowcase is now "sticky" but controlled by the GSAP timeline
+            instead of CSS. This provides a smoother, more reliable animation.
+            Passing the ref allows GSAP to target it.
+          */}
+          <WorkShowcase ref={workShowcaseRef} />
         </ShowcaseContainer>
 
       </main>

@@ -12,8 +12,8 @@ const ShowcaseSection = styled.section`
   /* This is the top layer, it will cover the title */
   z-index: 2; 
   
-  /* The section itself is see-through; only the cards have a background */
-  background-color: transparent;
+  /* Changed from 'transparent' to the dark background color */
+  background-color: #1a1a1a;
   
   display: flex;
   justify-content: center;
@@ -36,7 +36,7 @@ const ProjectCardLink = styled.a`
   left: 0;
   display: block;
   width: 100%;
-  background-color: #1c1c1c;
+  background-color: #1a1a1a;
   border-radius: 16px;
   overflow: hidden;
   text-decoration: none;

@@ -1,43 +1,89 @@
 // src/components/WorkShowcase.jsx
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { SHOWCASE_PROJECTS as projects } from '../data/portfolioData';
 
-// This is the main sticky container for the whole section
+// --- STYLED COMPONENTS ---
+
+// ADDED the animation trigger logic here
 const ShowcaseSection = styled.section`
   position: sticky;
   top: 0;
   height: 100vh;
   width: 100%;
-  background-color: #121212;
-  
-  // Use Flexbox to stack the title and card container vertically
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 2.5rem; // This creates space between the title and the card area
-
+  background-color: #1a1a1a;
   padding: 2rem;
   box-sizing: border-box;
   overflow: hidden;
+  position: relative; 
+  
+  /* When this section has the .is-active class, target the title's pseudo-element */
+  &.is-active .work-title::after {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
 `;
 
-// This is the title from the old component, now living here
+const TitleContainer = styled.div`
+  position: absolute;
+  top: 10%;
+  left: 25rem;
+  width: 50%;
+  z-index: 5;
+
+  @media (max-width: 768px) {
+    top: 10%;
+    left: 2rem;
+    width: auto;
+  }
+`;
+
+const ProjectsContainer = styled.div`
+  position: absolute;
+  top: 82%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 900px;
+  z-index: 1;
+
+   @media (max-width: 768px) {
+    max-width: 90vw;
+  }
+`;
+
+// --- MODIFIED THE TITLE COMPONENT ---
 const Title = styled.h2`
-  color: #FCD4D4;
+  color: #FFFFFF; /* Base color is now white */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: clamp(3rem, 10vw, 5rem); // Slightly smaller to give card more room
+  font-size: clamp(3rem, 10vw, 5rem);
   font-weight: 800;
   text-transform: uppercase;
   margin: 0;
-  text-shadow: 0 0 20px rgba(252, 212, 212, 0.4);
+  position: relative; /* Required for the pseudo-element */
+
+  /* The pseudo-element holds the pink, animated text */
+  &::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    color: #FCD4D4; /* The pink highlight color */
+    text-shadow: 0 0 20px rgba(252, 212, 212, 0.4);
+    
+    /* Start with the pink text hidden */
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    
+    /* Define the smooth animation */
+    transition: clip-path 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 `;
 
 const CardContainer = styled.div`
   position: relative;
   width: 100%;
-  max-width: 900px;
   aspect-ratio: 900 / 745;
 `;
 
@@ -52,18 +98,9 @@ const ProjectCardLink = styled.a`
   overflow: hidden;
   text-decoration: none;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   opacity: 0;
-  transform: translateY(20px);
-  pointer-events: none;
-
-  ${(props) =>
-    props.isActive &&
-    css`
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    `}
+  transform: translateY(40px) scale(0.95);
+  pointer-events: auto;
 `;
 
 const CardHeader = styled.div`
@@ -92,32 +129,38 @@ const CardImage = styled.img`
   display: block;
 `;
 
-const WorkShowcase = React.forwardRef(({ scrollProgress }, ref) => {
-  const activeIndex = Math.min(
-    projects.length - 1,
-    Math.floor(scrollProgress * projects.length)
-  );
+const WorkShowcase = React.forwardRef((props, ref) => {
+  // --- ADDED THE TEXT to a variable for re-use ---
+  const titleText = "Latest Work";
 
   return (
     <ShowcaseSection ref={ref}>
-      <Title>Latest Work</Title>
-      <CardContainer>
-        {projects.map((project, index) => (
-          <ProjectCardLink
-            key={project.id}
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            isActive={index === activeIndex}
-          >
-            <CardHeader>
-              <CardTitle>{project.name}</CardTitle>
-              <ExternalLinkIcon />
-            </CardHeader>
-            <CardImage src={project.imageUrl} alt={`${project.name} project showcase`} />
-          </ProjectCardLink>
-        ))}
-      </CardContainer>
+      <TitleContainer>
+        {/* MODIFIED the Title element to include the data-text attribute */}
+        <Title className="work-title" data-text={titleText}>
+          {titleText}
+        </Title>
+      </TitleContainer>
+
+      <ProjectsContainer>
+        <CardContainer>
+          {projects.map((project) => (
+            <ProjectCardLink
+              key={project.id}
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="project-card"
+            >
+              <CardHeader>
+                <CardTitle>{project.name}</CardTitle>
+                <ExternalLinkIcon />
+              </CardHeader>
+              <CardImage src={project.imageUrl} alt={`${project.name} project showcase`} />
+            </ProjectCardLink>
+          ))}
+        </CardContainer>
+      </ProjectsContainer>
     </ShowcaseSection>
   );
 });

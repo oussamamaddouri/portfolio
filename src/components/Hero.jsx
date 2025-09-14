@@ -1,19 +1,22 @@
 // src/components/Hero.jsx
-import React from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { PROFILE_DATA } from '../data/portfolioData';
 
-// The HeroSection acts as the main container and positioning context.
+gsap.registerPlugin(ScrollTrigger);
+
+// Styled components (Only the 'Name' component is significantly changed)
 const HeroSection = styled.section`
   min-height: 100vh;
   width: 100%;
   padding: 2rem;
-  background-color: #1a1a1a;
+  background-color: ${({ theme }) => theme.colors.background};
   overflow: hidden;
   position: relative;
 `;
 
-// This container now primarily holds the background and the profile image.
 const ContentContainer = styled.div`
   position: absolute;
   top: 190px;
@@ -27,10 +30,9 @@ const ContentContainer = styled.div`
   overflow: visible;
 `;
 
-// NEW: A container to hold and position the bio title and description together.
 const BioContainer = styled.div`
   position: absolute;
-  top: 3rem;
+  top: 4rem;
   left: 3rem;
   z-index: 5;
   max-width: 480px;
@@ -38,14 +40,14 @@ const BioContainer = styled.div`
   flex-direction: column;
 
   @media (max-width: 768px) {
-    top: 2rem;
+    display: flex;
+    top: 5rem;
     left: 2rem;
     right: 2rem;
     max-width: 100%;
   }
 `;
 
-// NEW: Styled component specifically for the larger bio title.
 const BioTitle = styled.h2`
   color: #ffffff;
   font-family: 'Inter', sans-serif;
@@ -56,7 +58,6 @@ const BioTitle = styled.h2`
   margin-bottom: 0.75rem;
 `;
 
-// MODIFIED: This is now just for the description paragraph.
 const BioDescription = styled.p`
   color: #c4c4c4;
   font-family: 'Inter', sans-serif;
@@ -66,7 +67,8 @@ const BioDescription = styled.p`
   margin: 0;
 `;
 
-// Main name headline that overlaps the image
+// --- KEY CHANGE IS HERE ---
+// We're applying the gradient text effect directly to the name component.
 const Name = styled.h1`
   position: absolute;
   top: 36rem;
@@ -76,26 +78,31 @@ const Name = styled.h1`
   width: 100%;
   text-align: center;
   font-family: 'Inter', sans-serif;
-  font-size: clamp(2.5rem, 10vw, 7rem);
-  font-weight: 700;
+  font-size: clamp(2.3rem, 12vw, 7rem);
+  font-weight: 800; // Increased weight for impact, matching your footer style.
   text-transform: uppercase;
   line-height: 0.9;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  color: #ffffff;
+  letter-spacing: -0.04em; // Tighten spacing for a bold look.
+  white-space: normal;
+  
+  /* This is the magic part from your Footer.jsx */
+  background: linear-gradient(to bottom, #FFFFFF 50%, #FBEBEB 50%);
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
 
-  &::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    color: #ffc4c4;
-    clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0% 100%);
+  @media (max-width: 768px) {
+    top: 35rem;
+    line-height: 1;
   }
+  
+  @media (max-height: 700px) {
+    top: 28rem;
+  }
+
+  /* The ::after pseudo-element is no longer needed. */
 `;
 
-// Subtitle at the bottom-left
 const Subtitle = styled.p`
   position: absolute;
   bottom: 1.3rem;
@@ -128,12 +135,11 @@ const CtaButton = styled.a`
   }
 `;
 
-// FINAL: Profile image with sharpness fixes and correct centering
 const ProfileImage = styled.img`
   position: absolute;
   bottom: 0;
-  left: 83%; /* This is required for translateX(-50%) to center correctly */
-  transform: translateX(-50%); /* Centers the image */
+  left: 83%;
+  transform: translateX(-50%);
   height: 580px;
   width: auto;
   object-fit: contain;
@@ -146,30 +152,76 @@ const ProfileImage = styled.img`
     drop-shadow(0 -0px 2px rgba(255, 255, 255, 0.6))
     drop-shadow(-2px 0px 10px rgba(255, 255, 255, 0.4))
     drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.4));
-  
-  /* --- STYLES FOR SHARPNESS --- */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 `;
 
-
 const Hero = () => {
+  const component = useRef(null);
+
+  useLayoutEffect(() => {
+    let ctx = gsap.context(() => {
+      
+      gsap.from(".reveal-text", {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out",
+        stagger: 0.2,
+      });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: component.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1,
+          pin: true,
+          pinSpacing: false,
+        }
+      });
+      
+      // --- KEY CHANGE IN ANIMATION ---
+      // The animation for the ".name-reveal" clip-path has been removed.
+      
+      // The timeline now starts with the parallax effect on the profile image.
+      tl.to(".profile-image", {
+        y: -100,
+        duration: 2,
+        ease: "power2.inOut",
+      })
+      // Fade out all the content as we scroll further down.
+      // We target the name as well with the '.reveal-text' class.
+      .to(".content-container, .name-reveal, .reveal-text", {
+        opacity: 0,
+        duration: 1,
+        ease: "power2.in"
+      }, "-=0.5");
+
+
+    }, component);
+    
+    return () => ctx.revert();
+  }, []);
+
+
   return (
-    <HeroSection id="home">
-      <Name data-text={PROFILE_DATA.name}>{PROFILE_DATA.name}</Name>
+    <HeroSection id="home" ref={component}>
+      {/* We add the 'name-reveal' class here just so the fade-out animation can target it. */}
+      <Name className="name-reveal">
+        {PROFILE_DATA.name}
+      </Name>
 
-      <ContentContainer>
-        {/* Render the new bio structure */}
+      <ContentContainer className="content-container">
         <BioContainer>
-          <BioTitle>{PROFILE_DATA.bioTitle}</BioTitle>
-          <BioDescription>{PROFILE_DATA.bioDescription}</BioDescription>
+          <BioTitle className="reveal-text">{PROFILE_DATA.bioTitle}</BioTitle>
+          <BioDescription className="reveal-text">{PROFILE_DATA.bioDescription}</BioDescription>
         </BioContainer>
-
-        <ProfileImage src={PROFILE_DATA.picture} alt={PROFILE_DATA.name} />
+        <ProfileImage className="profile-image" src={PROFILE_DATA.picture} alt={PROFILE_DATA.name} />
       </ContentContainer>
 
-      <Subtitle>{PROFILE_DATA.title}</Subtitle>
-      <CtaButton href="#contact">
+      <Subtitle className="reveal-text">{PROFILE_DATA.title}</Subtitle>
+      <CtaButton className="reveal-text" href="#contact">
         Get in touch &rarr;
       </CtaButton>
     </HeroSection>

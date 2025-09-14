@@ -1,19 +1,22 @@
 // src/components/Footer.jsx
 import React from 'react';
 import styled from 'styled-components';
+import { SOCIAL_LINKS } from '../data/portfolioData';
+import githubIcon from '../assets/icons/github.png';
+import linkedinIcon from '../assets/icons/linkedin.png';
 
 // This is the main container for the entire footer section.
 // It sets the dark background and centers the content.
 const FooterContainer = styled.footer`
   /* A dark, near-black background as seen in the image. */
-  background-color: #121212; 
+  background-color: #1a1a1a;
   color: #FFFFFF;
-  
+
   /* This makes the footer section take up the full height of the browser window. */
-  height: 100vh; 
+  height: 100vh;
   /* A min-height is good practice to ensure the layout doesn't break on very short screens. */
-  min-height: 500px; 
-  
+  min-height: 500px;
+
   /* Flexbox is used to perfectly center the content both vertically and horizontally. */
   display: flex;
   flex-direction: column;
@@ -36,7 +39,7 @@ const FooterContainer = styled.footer`
     height: 70%;
     min-height: 350px;
     /* A slightly lighter dark shade creates the panel effect */
-    background-color: rgba(26, 26, 26, 0.7); 
+    background-color: #242424;
     border-radius: 32px;
     z-index: 0;
   }
@@ -57,7 +60,7 @@ const ContactHeading = styled.h2`
   margin: 0 0 2.5rem 0;
   position: relative;
   z-index: 1; /* Ensures text is on top of the background panel. */
-  
+
   /* The gradient provides the split-color effect. */
   background: linear-gradient(to bottom, #FFFFFF 50%, #FBEBEB 50%);
   color: transparent;
@@ -77,6 +80,8 @@ const EmailLink = styled.a`
   transition: all 0.3s ease;
   position: relative;
   z-index: 1; /* Sits on top of the panel. */
+  margin-bottom: 2rem;
+
 
   &:hover {
     background-color: #FFFFFF;
@@ -85,18 +90,60 @@ const EmailLink = styled.a`
   }
 `;
 
+const SocialLinksContainer = styled.div`
+  display: flex;
+  gap: 1.5rem; /* Adds space between the icons */
+  position: relative;
+  z-index: 1;
+`;
+
+const SocialIcon = styled.img`
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  filter: grayscale(1) brightness(0.8); /* Apply the filter by default */
+`;
+
+const SocialLink = styled.a`
+  display: inline-block;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px); /* Adds a subtle "lift" effect on hover */
+  }
+  
+  /* On hover of the link, remove the filter from the icon */
+  &:hover ${SocialIcon} {
+    opacity: 1;
+    filter: none;
+  }
+`;
+
 const Footer = () => {
-  const email = "hi@jameswilliams.design";
+  const email = "oussamamaddouri108@gmail.com";
 
   return (
-    <FooterContainer id="contact">
-      <ContactHeading>
+    // ID attribute is REMOVED from this container
+    <FooterContainer>
+      
+      {/* ID attribute is MOVED to this visible heading */}
+      <ContactHeading id="contact">
         Get in Touch
       </ContactHeading>
 
       <EmailLink href={`mailto:${email}`}>
         {email}
       </EmailLink>
+      <SocialLinksContainer>
+        <SocialLink href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer">
+          <SocialIcon src={githubIcon} alt="GitHub" />
+        </SocialLink>
+        <SocialLink href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer">
+          <SocialIcon src={linkedinIcon} alt="LinkedIn" />
+        </SocialLink>
+      </SocialLinksContainer>
     </FooterContainer>
   );
 };

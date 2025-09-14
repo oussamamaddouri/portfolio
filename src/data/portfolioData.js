@@ -9,7 +9,7 @@ import iberostar from '/src/assets/fonts/iberostar.png';
 
 export const PROFILE_DATA = {
   name: "Oussama Maddouri",
-  title: "Full-Stack Developer & DevOps Specialist",
+  title: "DevOps Specialist & Full-Stack Developer",
   bioTitle: "Hi, I’m Oussama I build and manage scalable apps and infrastructure.",
   bioDescription: "I specialize in building full-stack applications with React & Python, while managing cloud infrastructure and automation using Docker, Linux, and networking tools. With hands-on experience across development, virtualization, and monitoring, I bridge the gap between software and systems.",
   picture: profilePic,
@@ -17,8 +17,8 @@ export const PROFILE_DATA = {
 };
 
 export const SOCIAL_LINKS = {
-  github: "https://github.com/your-username",
-  linkedin: "https://linkedin.com/in/your-username",
+  github: "https://github.com/oussamamaddouri",
+  linkedin: "https://www.linkedin.com/in/maddouriouss/",
   instagram: "https://instagram.com/your-username",
 };
 

@@ -3,16 +3,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 
 // --- Data ---
-// This remains unchanged.
 const systemsAndVirtualization = [
     { id: 'linux', src: '/icons/linux.png', alt: 'Linux', noInvert: true },
     { id: 'docker', src: '/icons/docker.png', alt: 'Docker' },
     { id: 'powershell', src: '/icons/powershell.png', alt: 'PowerShell' },
-    { id: 'shell', src: '/icons/shell.png', alt: 'Shell Scripting' },
+    { id: 'shell', src: '/icons/shell.png', alt: 'Shell Scripting', noInvert: true },
 ];
 const networkingAndInfrastructure = [
-    { id: 'ccna', src: '/icons/ccna.png', alt: 'CCNA' },
-    { id: 'wireshark', src: '/icons/wireshark.png', alt: 'Wireshark' },
+    { id: 'ccna', src: '/icons/ccna.png', alt: 'CCNA', noInvert: true },
+    { id: 'wireshark', src: '/icons/wireshark.png', alt: 'Wireshark', noInvert: true },
     { id: 'nagios', src: '/icons/nagios.png', alt: 'Nagios' },
     { id: 'zabbix', src: '/icons/zabbix.png', alt: 'Zabbix', noInvert: true },
 ];
@@ -21,10 +20,10 @@ const iotSkills = [
     { id: 'iot', src: '/icons/iot.png', alt: 'IoT' },
 ];
 const webDevelopmentAndAPIs = [
-    { id: 'html', src: '/icons/html.png', alt: 'HTML' },
-    { id: 'css', src: '/icons/css.png', alt: 'CSS' },
-    { id: 'javascript', src: '/icons/javascript.png', alt: 'JavaScript' },
-    { id: 'react', src: '/icons/react.png', alt: 'React' },
+    { id: 'html', src: '/icons/html.png', alt: 'HTML', noInvert: true },
+    { id: 'css', src: '/icons/css.png', alt: 'CSS', noInvert: true },
+    { id: 'javascript', src: '/icons/javascript.png', alt: 'JavaScript', noInvert: true },
+    { id: 'react', src: '/icons/react.png', alt: 'React', noInvert: true },
     { id: 'tailwind', src: '/icons/tailwind-css.png', alt: 'Tailwind CSS', needsScale: true },
     { id: 'rest', src: '/icons/rest-api-icon.png', alt: 'REST API' },
     { id: 'graphql', src: '/icons/graphql-icon.png', alt: 'GraphQL' },
@@ -36,7 +35,7 @@ const databasesAndMonitoring = [
     { id: 'kibana', src: '/icons/kibana.png', alt: 'Kibana' },
 ];
 const programmingAndAutomation = [
-    { id: 'python', src: '/icons/python.png', alt: 'Python' },
+    { id: 'python', src: '/icons/python.png', alt: 'Python', noInvert: true },
 ];
 
 const allSkills = [
@@ -57,11 +56,14 @@ const SkillsSection = styled.section`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: 768px) {
+    /* More padding on mobile so container doesn't touch the edges */
+    padding: 1rem;
+  }
 `;
 
-// FIXED: Restored original dimensions and corrected animation trigger logic.
 const ContentContainer = styled.div`
-  /* --- Restored dimensions from Hero component --- */
   width: 90%;
   max-width: 1300px;
   height: 65vh;
@@ -74,24 +76,26 @@ const ContentContainer = styled.div`
   padding: 2.5rem;
   box-sizing: border-box;
 
-  /* --- Animation setup --- */
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 
-  /* Class applied by observer to trigger animation */
   &.is-visible {
     opacity: 1;
     transform: translateY(0);
   }
 
   @media (max-width: 768px) {
-    height: 80vh;
+    /* --- CHANGE 1: Let the container's height be flexible --- */
+    height: auto;           /* Let content determine height */
+    min-height: 80vh;       /* Ensure it's still tall */
+    max-height: none;       /* Remove any maximum height limit */
+    
     padding: 1.5rem;
+    width: 100%; /* Take up more of the screen width on mobile */
   }
 `;
 
-// Title style remains, it's solid.
 const SectionTitle = styled.h2`
   font-family: 'Inter', sans-serif;
   font-size: clamp(1.75rem, 4vw, 2.25rem);
@@ -106,6 +110,10 @@ const SectionTitle = styled.h2`
   position: relative;
   padding-bottom: 0.75rem;
 
+  @media (max-width: 768px) {
+      margin-bottom: 1.5rem;
+  }
+
   &::after {
     content: '';
     position: absolute;
@@ -118,17 +126,20 @@ const SectionTitle = styled.h2`
   }
 `;
 
-// Adjusted gap to ensure fit.
 const LogosContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 2.2rem 2.5rem; /* row-gap column-gap */
+  gap: 2.2rem 2.5rem;
   padding: 1rem 0;
+
+  @media (max-width: 768px) {
+      /* --- CHANGE 2: Reduce the gap between logos --- */
+      gap: 1.5rem;
+  }
 `;
 
-// FIXED: Animation logic now directly tied to a prop.
 const LogoWrapper = styled.div`
   opacity: 0;
   transform: scale(0.9);
@@ -143,7 +154,6 @@ const LogoWrapper = styled.div`
     `}
 `;
 
-// Adjusted size to fit the container.
 const LogoImage = styled.img`
   max-width: 65px;
   height: 65px;
@@ -167,12 +177,22 @@ const LogoImage = styled.img`
     filter: none;
     transform: ${(props) => (props.needsScale ? 'scale(1.35)' : 'scale(1.15)')};
   }
+
+  @media (max-width: 768px) {
+    /* --- CHANGE 3: Reduce the logo size --- */
+    max-width: 50px;
+    height: 50px;
+  }
+  
+  @media (max-width: 480px) {
+      /* Even smaller for very narrow phones */
+      max-width: 45px;
+      height: 45px;
+  }
 `;
 
 
 // --- Main Component ---
-// Logic is now robust and correctly passes props.
-
 const Skills = () => {
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef(null);
@@ -185,7 +205,7 @@ const Skills = () => {
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.2 } // Trigger when 20% of the container is visible.
+      { threshold: 0.2 }
     );
 
     const currentRef = containerRef.current;
@@ -207,8 +227,7 @@ const Skills = () => {
           {allSkills.map((logo, index) => (
             <LogoWrapper
               key={logo.id}
-              isVisible={isVisible} // The prop that makes the animation work
-              // Delay starts after the main container animates (0.6s) + a stagger
+              isVisible={isVisible}
               delay={0.6 + index * 0.05}
             >
               <LogoImage

@@ -41,7 +41,7 @@ jobs:
 
       # 4. Runs the build script defined in package.json to generate the static files
       - name: Build project
-        run: npm run build # This will create the 'dist' folder with your built site
+        run: npm run build -- --base=/portfolio/ # This will create the 'dist' folder with your built site
 
       # 5. Prepares the built files (the 'dist' folder) for deployment
       - name: Upload production-ready build files

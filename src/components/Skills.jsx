@@ -5,12 +5,17 @@ import styled, { css } from 'styled-components';
 // --- Data ---
 const systemsAndVirtualization = [
     { id: 'linux', src: '/icons/linux.png', alt: 'Linux', noInvert: true },
+    { id: 'windowsserver', src: '/icons/windowsserver.png', alt: 'Windows Server', noInvert: true },
     { id: 'docker', src: '/icons/docker.png', alt: 'Docker' },
+    { id: 'kubernetes', src: '/icons/kubernetes.png', alt: 'Kubernetes', noInvert: true },
     { id: 'powershell', src: '/icons/powershell.png', alt: 'PowerShell' },
     { id: 'shell', src: '/icons/shell.png', alt: 'Shell Scripting', noInvert: true },
 ];
 const networkingAndInfrastructure = [
     { id: 'ccna', src: '/icons/ccna.png', alt: 'CCNA', noInvert: true },
+    /* --- ADDED THESE LINES --- */
+    { id: 'ethicalhacker', src: '/icons/ethicalhacker.png', alt: 'Ethical Hacker', noInvert: true },
+    { id: 'cybersecurityanalyst', src: '/icons/cybersecurityanalyst.png', alt: 'Cybersecurity Analyst', noInvert: true },
     { id: 'wireshark', src: '/icons/wireshark.png', alt: 'Wireshark', noInvert: true },
     { id: 'nagios', src: '/icons/nagios.png', alt: 'Nagios' },
     { id: 'zabbix', src: '/icons/zabbix.png', alt: 'Zabbix', noInvert: true },
@@ -44,7 +49,7 @@ const allSkills = [
     ...databasesAndMonitoring, ...programmingAndAutomation
 ];
 
-// --- Styled Components ---
+// --- Styled Components (No changes below this line) ---
 
 const SkillsSection = styled.section`
   min-height: 100vh;
@@ -58,7 +63,6 @@ const SkillsSection = styled.section`
   align-items: center;
 
   @media (max-width: 768px) {
-    /* More padding on mobile so container doesn't touch the edges */
     padding: 1rem;
   }
 `;
@@ -86,13 +90,11 @@ const ContentContainer = styled.div`
   }
 
   @media (max-width: 768px) {
-    /* --- CHANGE 1: Let the container's height be flexible --- */
-    height: auto;           /* Let content determine height */
-    min-height: 80vh;       /* Ensure it's still tall */
-    max-height: none;       /* Remove any maximum height limit */
-    
+    height: auto;
+    min-height: 80vh;
+    max-height: none;
     padding: 1.5rem;
-    width: 100%; /* Take up more of the screen width on mobile */
+    width: 100%;
   }
 `;
 
@@ -135,7 +137,6 @@ const LogosContainer = styled.div`
   padding: 1rem 0;
 
   @media (max-width: 768px) {
-      /* --- CHANGE 2: Reduce the gap between logos --- */
       gap: 1.5rem;
   }
 `;
@@ -179,13 +180,11 @@ const LogoImage = styled.img`
   }
 
   @media (max-width: 768px) {
-    /* --- CHANGE 3: Reduce the logo size --- */
     max-width: 50px;
     height: 50px;
   }
-  
+
   @media (max-width: 480px) {
-      /* Even smaller for very narrow phones */
       max-width: 45px;
       height: 45px;
   }

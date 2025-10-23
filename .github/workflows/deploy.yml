@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # A descriptive name for your workflow
 name: Deploy Portfolio to GitHub Pages
 
@@ -53,3 +54,51 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+=======
+# .github/workflows/deploy.yml
+
+name: Deploy Portfolio to GitHub Pages
+
+# This workflow runs automatically on every push to your 'main' branch
+on:
+  push:
+    branches:
+      - main
+
+# Set the necessary permissions for the GitHub token
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project for production
+        # The 'npm run build' command creates a 'dist' folder with your final website files.
+        # The --base flag here ensures asset links are correct.
+        run: npm run build
+
+      - name: Upload production-ready build files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Copy the contents of the 'dist' folder to the target directory
+          source: "./dist/*"
+          target: ${{ secrets.TARGET_DIR }}
+>>>>>>> f6ea11f (feat: Portfolio/update)

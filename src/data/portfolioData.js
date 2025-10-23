@@ -8,10 +8,10 @@ import dashboardImage from '/src/assets/fonts/dashboard.png';
 import iberostar from '/src/assets/fonts/iberostar.png';
 
 export const PROFILE_DATA = {
-  name: "Oussama Maddouri",
-  title: "DevOps Specialist & Full-Stack Developer",
-  bioTitle: "Hi, I’m Oussama I build and manage scalable apps and infrastructure.",
-  bioDescription: "I specialize in building full-stack applications with React & Python, while managing cloud infrastructure and automation using Docker, Linux, and networking tools. With hands-on experience across development, virtualization, and monitoring, I bridge the gap between software and systems.",
+  name: "Maddouri Oussama",
+  title: "DevSecOps & Cloud Infrastructure Engineer",
+  bioTitle: "Hi, I’m Oussama a DevSecOps engineer who loves turning complex infrastructure problems into elegant, automated solutions",
+  bioDescription: " I’m a DevSecOps and Cloud Engineer who thrives on solving infrastructure and security challenges. I design and automate scalable systems using kubernetes, Docker, CI/CD piplines, and Linux environements, helping startups deliver faster with confidence. I'm driven by curiosity I love identifying technical problems and transforming them into innovative, secure and automated solutions ",
   picture: profilePic,
   logo: logoImg,
 };
@@ -20,6 +20,7 @@ export const SOCIAL_LINKS = {
   github: "https://github.com/oussamamaddouri",
   linkedin: "https://www.linkedin.com/in/maddouriouss/",
   instagram: "https://instagram.com/your-username",
+  credly: "https://www.credly.com/users/oussama-maddouri/badges#credly"
 };
 
 export const SKILLS_DATA = {
@@ -89,7 +90,7 @@ export const SHOWCASE_PROJECTS = [
   },
   {
     id: 'show-03',
-    name: 'Data Dashboard', // Example, change this
+    name: 'CybersecurityX', // Example, change this
     imageUrl: dashboardImage, // Placeholder image
     link: '#', // Remember to update link
   },

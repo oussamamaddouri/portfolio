@@ -1,78 +1,14 @@
-<<<<<<< HEAD
-# A descriptive name for your workflow
-name: Deploy Portfolio to GitHub Pages
-
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push events but only for the "main" branch
-  push:
-    branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab on GitHub
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "deploy"
-  deploy:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # These permissions are necessary to allow GitHub Actions to deploy to GitHub Pages
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # 1. Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # 2. Sets up Node.js on the runner, which is required to build your React app
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18' # Use a recent Long-Term Support (LTS) version of Node
-
-      # 3. Installs the project dependencies from your package-lock.json file
-      - name: Install dependencies
-        run: npm install
-
-      # 4. Runs the build script defined in package.json to generate the static files
-      - name: Build project
-        run: npm run build -- --base=/portfolio/ # This will create the 'dist' folder with your built site
-
-      # 5. Prepares the built files (the 'dist' folder) for deployment
-      - name: Upload production-ready build files
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-
-      # 6. Deploys the uploaded artifact to GitHub Pages
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-=======
 # .github/workflows/deploy.yml
 
-name: Deploy Portfolio to GitHub Pages
+name: Build and Deploy to VPS via SSH
 
-# This workflow runs automatically on every push to your 'main' branch
 on:
   push:
     branches:
       - main
 
-# Set the necessary permissions for the GitHub token
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -88,17 +24,13 @@ jobs:
         run: npm install
 
       - name: Build project for production
-        # The 'npm run build' command creates a 'dist' folder with your final website files.
-        # The --base flag here ensures asset links are correct.
         run: npm run build
 
-      - name: Upload production-ready build files
+      - name: Deploy to server via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # Copy the contents of the 'dist' folder to the target directory
           source: "./dist/*"
           target: ${{ secrets.TARGET_DIR }}
->>>>>>> f6ea11f (feat: Portfolio/update)
